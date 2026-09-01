@@ -1,0 +1,9 @@
+{
+  "name": "Bablu Search",
+  "short_name": "Bablu Search",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4285f4",
+  "icons": []
+}

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>bablu search</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+<script>
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js");
+}
+</script>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f7fb;
+    color: #222;
+    transition: 0.3s;
+}
+
+.header {
+    background: #4285f4;
+    color: white;
+    padding: 25px 15px;
+    text-align: center;
+}
+<link rel="manifest" href="manifest.json">
+.header h1 {
+    margin: 0 0 18px;
+}
+
+.search {
+    display: flex;
+    max-width: 650px;
+    margin: auto;
+}
+
+.search input {
+    flex: 1;
+    padding: 15px;
+    border: 0;
+    outline: 0;
+    font-size: 16px;
+    border-radius: 25px 0 0 25px;
+}
+
+.search button {
+    border: 0;
+    padding: 15px 20px;
+    background: #1557b0;
+    color: white;
+    border-radius: 0 25px 25px 0;
+    font-size: 16px;
+}
+
+.menu {
+    text-align: center;
+    padding: 15px;
+}
+
+.menu button {
+    border: 0;
+    padding: 11px 15px;
+    margin: 4px;
+    border-radius: 20px;
+    background: #4285f4;
+    color: white;
+    font-size: 14px;
+}
+
+#status {
+    text-align: center;
+    padding: 10px;
+}
+
+#results,
+#history {
+    max-width: 700px;
+    margin: auto;
+    padding: 10px 15px 30px;
+}
+
+.result,
+.history-item {
+    background: white;
+    margin: 12px 0;
+    padding: 18px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px #ddd;
+}
+
+.result h2 {
+    margin-top: 0;
+    color: #174ea6;
+}
+
+.result p {
+    line-height: 1.5;
+}
+
+.result a {
+    color: #188038;
+    text-decoration: none;
+}
+
+.history-item {
+    cursor: pointer;
+}
+
+/* DARK MODE */
+
+.dark {
+    background: #121212;
+    color: white;
+}
+
+.dark .result,
+.dark .history-item {
+    background: #1f1f1f;
+    box-shadow: 0 2px 8px #000;
+}
+
+.dark .result h2 {
+    color: #8ab4f8;
+}
+
+.dark .result a {
+    color: #81c995;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+
+    <h1>🔍 bablu search</h1>
+
+    <div class="search">
+
+        <input
+            id="search"
+            type="text"
+            placeholder="কিছু লিখে Search করুন"
+        >
+
+        <button onclick="searchWeb()">Search</button>
+
+    </div>
+
+</div>
+
+
+<div class="menu">
+
+    <button onclick="home()">🏠 Home</button>
+
+    <button onclick="showHistory()">🕘 History</button>
+
+    <button onclick="clearHistory()">🗑️ Clear</button>
+
+    <button onclick="darkMode()">🌙 Dark</button>
+
+</div>
+
+
+<div id="status">
+    কিছু লিখে Search করুন 👆
+</div>
+
+
+<div id="results">
+
+    <h2 style="text-align:center;">
+        স্বাগতম 👋
+    </h2>
+
+    <p style="text-align:center;">
+        আপনার Search App
+    </p>
+
+</div>
+
+
+<div id="history"></div>
+
+
+<script>
+
+let historyData =
+JSON.parse(localStorage.getItem("searchHistory")) || [];
+
+
+/* SEARCH */
+
+async function searchWeb() {
+
+    let input = document.getElementById("search");
+
+    let query = input.value.trim();
+
+    if (query === "") {
+        alert("কিছু লিখুন");
+        return;
+    }
+
+    saveHistory(query);
+
+    document.getElementById("history").innerHTML = "";
+
+    let results = document.getElementById("results");
+
+    let status = document.getElementById("status");
+
+    status.innerHTML = "🔄 Search হচ্ছে...";
+
+    results.innerHTML = "";
+
+
+    try {
+
+        let api =
+        "https://en.wikipedia.org/w/rest.php/v1/search/page?q="
+        + encodeURIComponent(query)
+        + "&limit=10";
+
+
+        let response = await fetch(api);
+
+
+        if (!response.ok) {
+            throw new Error("API Error");
+        }
+
+
+        let data = await response.json();
+
+
+        if (!data.pages || data.pages.length === 0) {
+
+            status.innerHTML =
+            "❌ কোনো ফলাফল পাওয়া যায়নি";
+
+            return;
+        }
+
+
+        status.innerHTML =
+        "✅ " + data.pages.length +
+        "টি ফলাফল পাওয়া গেছে";
+
+
+        data.pages.forEach(function(page) {
+
+            let title =
+            page.title || "No title";
+
+            let description =
+            page.description ||
+            page.excerpt ||
+            "বিস্তারিত তথ্য দেখতে নিচে চাপুন।";
+
+            let link =
+            "https://en.wikipedia.org/wiki/"
+            + encodeURIComponent(page.key);
+
+
+            results.innerHTML += `
+
+                <div class="result">
+
+                    <h2>${title}</h2>
+
+                    <p>${description}</p>
+
+                    <a href="${link}" target="_blank">
+                        বিস্তারিত দেখুন →
+                    </a>
+
+                </div>
+
+            `;
+
+        });
+
+
+    } catch (error) {
+
+        status.innerHTML =
+        "❌ Search করা যাচ্ছে না";
+
+        results.innerHTML = `
+
+            <div class="result">
+
+                <h2>⚠️ সমস্যা হয়েছে</h2>
+
+                <p>
+                Internet চালু আছে কিনা দেখুন।
+                তারপর আবার Search করুন।
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/* HISTORY */
+
+function saveHistory(query) {
+
+    historyData =
+    historyData.filter(function(item) {
+        return item !== query;
+    });
+
+
+    historyData.unshift(query);
+
+
+    historyData =
+    historyData.slice(0, 10);
+
+
+    localStorage.setItem(
+        "searchHistory",
+        JSON.stringify(historyData)
+    );
+
+}
+
+
+function showHistory() {
+
+    document.getElementById("results").innerHTML = "";
+
+    document.getElementById("status").innerHTML =
+    "🕘 আপনার Search History";
+
+
+    let box =
+    document.getElementById("history");
+
+
+    box.innerHTML = "";
+
+
+    if (historyData.length === 0) {
+
+        box.innerHTML =
+        "<p style='text-align:center;'>কোনো History নেই।</p>";
+
+        return;
+    }
+
+
+    historyData.forEach(function(item) {
+
+        box.innerHTML += `
+
+            <div
+                class="history-item"
+                onclick="searchAgain('${item.replace(/'/g, "\\'")}')"
+            >
+                🔍 ${item}
+            </div>
+
+        `;
+
+    });
+
+}
+
+
+function searchAgain(text) {
+
+    document.getElementById("search").value = text;
+
+    searchWeb();
+
+}
+
+
+/* CLEAR HISTORY */
+
+function clearHistory() {
+
+    historyData = [];
+
+    localStorage.removeItem("searchHistory");
+
+    document.getElementById("history").innerHTML = "";
+
+    document.getElementById("status").innerHTML =
+    "🗑️ History মুছে ফেলা হয়েছে";
+
+}
+
+
+/* HOME */
+
+function home() {
+
+    document.getElementById("search").value = "";
+
+    document.getElementById("history").innerHTML = "";
+
+    document.getElementById("status").innerHTML =
+    "কিছু লিখে Search করুন 👆";
+
+
+    document.getElementById("results").innerHTML = `
+
+        <h2 style="text-align:center;">
+            🏠 My Search
+        </h2>
+
+        <p style="text-align:center;">
+            আপনার Search App-এ স্বাগতম 👋
+        </p>
+
+    `;
+
+}
+
+
+/* DARK MODE */
+
+function darkMode() {
+
+    document.body.classList.toggle("dark");
+
+}
+
+</script>
+
+</body>
+</html>
