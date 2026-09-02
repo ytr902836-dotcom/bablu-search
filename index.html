@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Bablu Search</title>
-<link rel="manifest" href="manifest.json">
 
 <style>
 * {
@@ -15,145 +14,101 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: #f5f7fb;
-    color: #222;
+    background: white;
+    color: #111;
+    text-align: center;
     transition: 0.3s;
 }
-
-/* HEADER */
 
 header {
     background: #4285f4;
     color: white;
-    padding: 35px 15px;
-    text-align: center;
+    padding: 35px 15px 30px;
 }
 
-header h1 {
-    margin: 0 0 22px;
-    font-size: 32px;
+h1 {
+    margin: 5px 0 25px;
+    font-size: 38px;
 }
-
-/* SEARCH */
 
 .search-box {
+    display: flex;
     max-width: 650px;
     margin: auto;
-    display: flex;
     background: white;
+    border-radius: 35px;
     padding: 5px;
-    border-radius: 30px;
 }
 
-.search-box input {
+#search {
     flex: 1;
     border: none;
     outline: none;
-    padding: 14px 18px;
-    font-size: 17px;
+    padding: 15px;
+    font-size: 18px;
     border-radius: 30px;
-    color: #222;
+    min-width: 0;
 }
 
-.search-box button {
+button {
     border: none;
-    background: #1557b0;
+    border-radius: 30px;
+    background: #4285f4;
     color: white;
-    padding: 12px 20px;
-    border-radius: 25px;
+    padding: 13px 22px;
     font-size: 16px;
+    cursor: pointer;
 }
 
-/* MENU */
+.voice {
+    font-size: 20px;
+    padding: 12px 18px;
+}
 
 .menu {
-    text-align: center;
-    padding: 15px 8px;
+    padding: 25px 10px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
 }
 
 .menu button {
-    border: none;
-    padding: 11px 15px;
-    margin: 4px;
-    border-radius: 22px;
-    background: #4285f4;
-    color: white;
-    font-size: 14px;
+    min-width: 120px;
 }
-
-/* CONTENT */
 
 #content {
     max-width: 700px;
-    margin: auto;
+    margin: 20px auto;
     padding: 15px;
 }
 
-.card {
-    background: white;
-    padding: 18px;
-    margin: 12px 0;
-    border-radius: 14px;
-    box-shadow: 0 2px 8px #ddd;
-}
-
-.card h2 {
-    margin-top: 0;
-    color: #174ea6;
-}
-
 .history-item {
-    padding: 14px;
+    background: #f1f1f1;
     margin: 8px 0;
-    background: #f1f3f4;
+    padding: 12px;
     border-radius: 10px;
+    text-align: left;
 }
 
-/* DARK MODE */
+/* Dark Mode */
 
-.dark {
+body.dark {
     background: #121212;
     color: white;
 }
 
-.dark .card {
-    background: #1f1f1f;
-    box-shadow: 0 2px 8px #000;
+body.dark .history-item {
+    background: #252525;
 }
 
-.dark .history-item {
-    background: #303134;
-}
-
-.dark .search-box {
-    background: #303134;
-}
-
-.dark .search-box input {
-    background: #303134;
+body.dark #search {
+    background: #222;
     color: white;
 }
 
-/* MOBILE */
-
-@media (max-width: 500px) {
-
-    header {
-        padding: 28px 10px;
-    }
-
-    header h1 {
-        font-size: 27px;
-    }
-
-    .search-box input {
-        font-size: 15px;
-    }
-
-    .search-box button {
-        padding: 10px 15px;
-    }
-
+body.dark .search-box {
+    background: #222;
 }
 </style>
 </head>
@@ -170,223 +125,141 @@ header h1 {
 id="search"
 type="text"
 placeholder="কিছু লিখে Search করুন"
+onkeydown="if(event.key==='Enter') searchWeb()"
 >
 
-<button onclick="searchWeb()">
-Search
-</button>
+<button onclick="searchWeb()">Search</button>
+
+<button class="voice" onclick="voiceSearch()">🎤</button>
 
 </div>
 
 </header>
 
 
-<!-- MENU -->
-
 <div class="menu">
 
-<button onclick="home()">
-🏠 Home
-</button>
+<button onclick="showHome()">🏠 Home</button>
 
-<button onclick="searchWeb()">
-🔍 Search
-</button>
+<button onclick="focusSearch()">🔎 Search</button>
 
-<button onclick="showHistory()">
-🕘 History
-</button>
+<button onclick="showHistory()">🕘 History</button>
 
-<button onclick="clearHistory()">
-🗑️ Clear
-</button>
+<button onclick="clearHistory()">🗑️ Clear</button>
 
-<button onclick="toggleDark()">
-🌙 Dark Mode
-</button>
+<button onclick="toggleDark()">🌙 Dark Mode</button>
 
 </div>
 
-
-<!-- CONTENT -->
 
 <div id="content">
 
-<div class="card">
-
 <h2>স্বাগতম 👋</h2>
 
-<p>
-এটি আপনার Bablu Search App।
-</p>
-
-<p>
-উপরের Search Box-এ কিছু লিখে Search করুন।
-</p>
-
-</div>
+<p>Bablu Search-এ কিছু লিখে Search করুন।</p>
 
 </div>
 
 
 <script>
 
-/* HISTORY */
-
-let historyData =
-JSON.parse(
-localStorage.getItem("babluHistory")
-) || [];
-
-
-/* HOME */
-
-function home() {
-
-document.getElementById("search").value = "";
-
-document.getElementById("content").innerHTML = `
-
-<div class="card">
-
-<h2>🏠 Bablu Search</h2>
-
-<p>
-আপনার Search App-এ স্বাগতম 👋
-</p>
-
-<p>
-কিছু লিখে Search করুন।
-</p>
-
-</div>
-
-`;
-
-}
-
-
 /* SEARCH */
 
 function searchWeb() {
 
-let query =
-document.getElementById("search")
-.value
-.trim();
+    let text = document.getElementById("search").value.trim();
 
+    if (text === "") {
+        alert("কিছু লিখে Search করুন।");
+        return;
+    }
 
-if (query === "") {
+    saveHistory(text);
 
-alert("কিছু লিখুন");
-
-return;
-
+    window.location.href =
+        "https://www.google.com/search?q=" +
+        encodeURIComponent(text);
 }
 
 
-/* SAVE HISTORY */
+/* HISTORY SAVE */
 
-historyData =
-historyData.filter(
-item => item !== query
-);
+function saveHistory(text) {
 
-historyData.unshift(query);
+    let history =
+        JSON.parse(localStorage.getItem("searchHistory")) || [];
 
-historyData =
-historyData.slice(0, 20);
+    history.unshift(text);
 
-localStorage.setItem(
-"babluHistory",
-JSON.stringify(historyData)
-);
+    history = [...new Set(history)];
 
-
-/* GOOGLE SEARCH */
-
-window.location.href =
-"https://www.google.com/search?q=" +
-encodeURIComponent(query);
-
+    localStorage.setItem(
+        "searchHistory",
+        JSON.stringify(history)
+    );
 }
 
 
-/* HISTORY */
+/* SHOW HISTORY */
 
 function showHistory() {
 
-let content =
-document.getElementById("content");
+    let history =
+        JSON.parse(localStorage.getItem("searchHistory")) || [];
 
-content.innerHTML = `
+    let content =
+        document.getElementById("content");
 
-<div class="card">
+    if (history.length === 0) {
 
-<h2>🕘 Search History</h2>
+        content.innerHTML =
+            "<h2>🕘 History</h2><p>কোনো Search History নেই।</p>";
 
-<div id="historyList"></div>
+        return;
+    }
 
-</div>
+    let html = "<h2>🕘 Search History</h2>";
 
-`;
+    history.forEach(function(item) {
 
+        html +=
+            '<div class="history-item">🔎 ' +
+            escapeHTML(item) +
+            '</div>';
 
-let list =
-document.getElementById("historyList");
+    });
 
-
-if (historyData.length === 0) {
-
-list.innerHTML =
-"<p>কোনো History নেই।</p>";
-
-return;
-
+    content.innerHTML = html;
 }
 
 
-historyData.forEach(function(item) {
-
-let div =
-document.createElement("div");
-
-div.className =
-"history-item";
-
-div.innerText =
-"🔎 " + item;
-
-list.appendChild(div);
-
-});
-
-}
-
-
-/* CLEAR */
+/* CLEAR HISTORY */
 
 function clearHistory() {
 
-historyData = [];
+    localStorage.removeItem("searchHistory");
 
-localStorage.removeItem(
-"babluHistory"
-);
+    document.getElementById("content").innerHTML =
+        "<h2>🗑️ History Clear হয়েছে</h2>";
+}
 
-document.getElementById("content").innerHTML = `
 
-<div class="card">
+/* HOME */
 
-<h2>🗑️ History Clear</h2>
+function showHome() {
 
-<p>
-Search History সফলভাবে মুছে ফেলা হয়েছে ✅
-</p>
+    document.getElementById("content").innerHTML =
+        "<h2>স্বাগতম 👋</h2>" +
+        "<p>Bablu Search-এ কিছু লিখে Search করুন।</p>";
 
-</div>
+}
 
-`;
+
+/* SEARCH BUTTON */
+
+function focusSearch() {
+
+    document.getElementById("search").focus();
 
 }
 
@@ -395,22 +268,107 @@ Search History সফলভাবে মুছে ফেলা হয়েছে �
 
 function toggleDark() {
 
-document.body.classList.toggle("dark");
+    document.body.classList.toggle("dark");
+
+    if (document.body.classList.contains("dark")) {
+
+        localStorage.setItem("darkMode", "on");
+
+    } else {
+
+        localStorage.setItem("darkMode", "off");
+
+    }
+}
+
+
+/* LOAD DARK MODE */
+
+if (localStorage.getItem("darkMode") === "on") {
+
+    document.body.classList.add("dark");
 
 }
 
-</script>
+
+/* VOICE SEARCH */
+
+function voiceSearch() {
+
+    const input =
+        document.getElementById("search");
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+
+        alert(
+            "এই Preview-তে Voice Search কাজ করছে না। Chrome-এ আপনার সাইটটি খুলে চেষ্টা করুন।"
+        );
+
+        return;
+    }
+
+    const recognition =
+        new SpeechRecognition();
+
+    recognition.lang = "bn-BD";
+
+    recognition.continuous = false;
+
+    recognition.interimResults = false;
 
 
-<!-- SERVICE WORKER -->
+    recognition.onstart = function() {
 
-<script>
+        input.placeholder =
+            "🎤 বলুন...";
 
-if ("serviceWorker" in navigator) {
+    };
 
-navigator.serviceWorker.register(
-"service-worker.js"
-);
+
+    recognition.onresult = function(event) {
+
+        input.value =
+            event.results[0][0].transcript;
+
+    };
+
+
+    recognition.onerror = function(event) {
+
+        alert(
+            "Microphone চালু হয়নি। Chrome-এ Microphone Permission Allow করুন।"
+        );
+
+    };
+
+
+    recognition.onend = function() {
+
+        input.placeholder =
+            "কিছু লিখে Search করুন";
+
+    };
+
+
+    recognition.start();
+
+}
+
+
+/* SECURITY */
+
+function escapeHTML(text) {
+
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
 }
 
