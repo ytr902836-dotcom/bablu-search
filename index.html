@@ -4,17 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>bablu search</title>
+<title>Bablu Search</title>
+<link rel="manifest" href="manifest.json">
 
 <style>
 * {
     box-sizing: border-box;
 }
-<script>
-if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("service-worker.js");
-}
-</script>
+
 body {
     margin: 0;
     font-family: Arial, sans-serif;
@@ -23,93 +20,93 @@ body {
     transition: 0.3s;
 }
 
-.header {
+/* HEADER */
+
+header {
     background: #4285f4;
     color: white;
-    padding: 25px 15px;
+    padding: 35px 15px;
     text-align: center;
 }
-<link rel="manifest" href="manifest.json">
-.header h1 {
-    margin: 0 0 18px;
+
+header h1 {
+    margin: 0 0 22px;
+    font-size: 32px;
 }
 
-.search {
-    display: flex;
+/* SEARCH */
+
+.search-box {
     max-width: 650px;
     margin: auto;
+    display: flex;
+    background: white;
+    padding: 5px;
+    border-radius: 30px;
 }
 
-.search input {
+.search-box input {
     flex: 1;
-    padding: 15px;
-    border: 0;
-    outline: 0;
-    font-size: 16px;
-    border-radius: 25px 0 0 25px;
+    border: none;
+    outline: none;
+    padding: 14px 18px;
+    font-size: 17px;
+    border-radius: 30px;
+    color: #222;
 }
 
-.search button {
-    border: 0;
-    padding: 15px 20px;
+.search-box button {
+    border: none;
     background: #1557b0;
     color: white;
-    border-radius: 0 25px 25px 0;
+    padding: 12px 20px;
+    border-radius: 25px;
     font-size: 16px;
 }
+
+/* MENU */
 
 .menu {
     text-align: center;
-    padding: 15px;
+    padding: 15px 8px;
 }
 
 .menu button {
-    border: 0;
+    border: none;
     padding: 11px 15px;
     margin: 4px;
-    border-radius: 20px;
+    border-radius: 22px;
     background: #4285f4;
     color: white;
     font-size: 14px;
 }
 
-#status {
-    text-align: center;
-    padding: 10px;
-}
+/* CONTENT */
 
-#results,
-#history {
+#content {
     max-width: 700px;
     margin: auto;
-    padding: 10px 15px 30px;
+    padding: 15px;
 }
 
-.result,
-.history-item {
+.card {
     background: white;
-    margin: 12px 0;
     padding: 18px;
-    border-radius: 12px;
+    margin: 12px 0;
+    border-radius: 14px;
     box-shadow: 0 2px 8px #ddd;
 }
 
-.result h2 {
+.card h2 {
     margin-top: 0;
     color: #174ea6;
 }
 
-.result p {
-    line-height: 1.5;
-}
-
-.result a {
-    color: #188038;
-    text-decoration: none;
-}
-
 .history-item {
-    cursor: pointer;
+    padding: 14px;
+    margin: 8px 0;
+    background: #f1f3f4;
+    border-radius: 10px;
 }
 
 /* DARK MODE */
@@ -119,325 +116,301 @@ body {
     color: white;
 }
 
-.dark .result,
-.dark .history-item {
+.dark .card {
     background: #1f1f1f;
     box-shadow: 0 2px 8px #000;
 }
 
-.dark .result h2 {
-    color: #8ab4f8;
+.dark .history-item {
+    background: #303134;
 }
 
-.dark .result a {
-    color: #81c995;
+.dark .search-box {
+    background: #303134;
+}
+
+.dark .search-box input {
+    background: #303134;
+    color: white;
+}
+
+/* MOBILE */
+
+@media (max-width: 500px) {
+
+    header {
+        padding: 28px 10px;
+    }
+
+    header h1 {
+        font-size: 27px;
+    }
+
+    .search-box input {
+        font-size: 15px;
+    }
+
+    .search-box button {
+        padding: 10px 15px;
+    }
+
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">
+<header>
 
-    <h1>🔍 bablu search</h1>
+<h1>🔎 Bablu Search</h1>
 
-    <div class="search">
+<div class="search-box">
 
-        <input
-            id="search"
-            type="text"
-            placeholder="কিছু লিখে Search করুন"
-        >
+<input
+id="search"
+type="text"
+placeholder="কিছু লিখে Search করুন"
+>
 
-        <button onclick="searchWeb()">Search</button>
-
-    </div>
+<button onclick="searchWeb()">
+Search
+</button>
 
 </div>
 
+</header>
+
+
+<!-- MENU -->
 
 <div class="menu">
 
-    <button onclick="home()">🏠 Home</button>
+<button onclick="home()">
+🏠 Home
+</button>
 
-    <button onclick="showHistory()">🕘 History</button>
+<button onclick="searchWeb()">
+🔍 Search
+</button>
 
-    <button onclick="clearHistory()">🗑️ Clear</button>
+<button onclick="showHistory()">
+🕘 History
+</button>
 
-    <button onclick="darkMode()">🌙 Dark</button>
+<button onclick="clearHistory()">
+🗑️ Clear
+</button>
 
-</div>
-
-
-<div id="status">
-    কিছু লিখে Search করুন 👆
-</div>
-
-
-<div id="results">
-
-    <h2 style="text-align:center;">
-        স্বাগতম 👋
-    </h2>
-
-    <p style="text-align:center;">
-        আপনার Search App
-    </p>
+<button onclick="toggleDark()">
+🌙 Dark Mode
+</button>
 
 </div>
 
 
-<div id="history"></div>
+<!-- CONTENT -->
+
+<div id="content">
+
+<div class="card">
+
+<h2>স্বাগতম 👋</h2>
+
+<p>
+এটি আপনার Bablu Search App।
+</p>
+
+<p>
+উপরের Search Box-এ কিছু লিখে Search করুন।
+</p>
+
+</div>
+
+</div>
 
 
 <script>
 
-let historyData =
-JSON.parse(localStorage.getItem("searchHistory")) || [];
-
-
-/* SEARCH */
-
-async function searchWeb() {
-
-    let input = document.getElementById("search");
-
-    let query = input.value.trim();
-
-    if (query === "") {
-        alert("কিছু লিখুন");
-        return;
-    }
-
-    saveHistory(query);
-
-    document.getElementById("history").innerHTML = "";
-
-    let results = document.getElementById("results");
-
-    let status = document.getElementById("status");
-
-    status.innerHTML = "🔄 Search হচ্ছে...";
-
-    results.innerHTML = "";
-
-
-    try {
-
-        let api =
-        "https://en.wikipedia.org/w/rest.php/v1/search/page?q="
-        + encodeURIComponent(query)
-        + "&limit=10";
-
-
-        let response = await fetch(api);
-
-
-        if (!response.ok) {
-            throw new Error("API Error");
-        }
-
-
-        let data = await response.json();
-
-
-        if (!data.pages || data.pages.length === 0) {
-
-            status.innerHTML =
-            "❌ কোনো ফলাফল পাওয়া যায়নি";
-
-            return;
-        }
-
-
-        status.innerHTML =
-        "✅ " + data.pages.length +
-        "টি ফলাফল পাওয়া গেছে";
-
-
-        data.pages.forEach(function(page) {
-
-            let title =
-            page.title || "No title";
-
-            let description =
-            page.description ||
-            page.excerpt ||
-            "বিস্তারিত তথ্য দেখতে নিচে চাপুন।";
-
-            let link =
-            "https://en.wikipedia.org/wiki/"
-            + encodeURIComponent(page.key);
-
-
-            results.innerHTML += `
-
-                <div class="result">
-
-                    <h2>${title}</h2>
-
-                    <p>${description}</p>
-
-                    <a href="${link}" target="_blank">
-                        বিস্তারিত দেখুন →
-                    </a>
-
-                </div>
-
-            `;
-
-        });
-
-
-    } catch (error) {
-
-        status.innerHTML =
-        "❌ Search করা যাচ্ছে না";
-
-        results.innerHTML = `
-
-            <div class="result">
-
-                <h2>⚠️ সমস্যা হয়েছে</h2>
-
-                <p>
-                Internet চালু আছে কিনা দেখুন।
-                তারপর আবার Search করুন।
-                </p>
-
-            </div>
-
-        `;
-
-    }
-
-}
-
-
 /* HISTORY */
 
-function saveHistory(query) {
-
-    historyData =
-    historyData.filter(function(item) {
-        return item !== query;
-    });
-
-
-    historyData.unshift(query);
-
-
-    historyData =
-    historyData.slice(0, 10);
-
-
-    localStorage.setItem(
-        "searchHistory",
-        JSON.stringify(historyData)
-    );
-
-}
-
-
-function showHistory() {
-
-    document.getElementById("results").innerHTML = "";
-
-    document.getElementById("status").innerHTML =
-    "🕘 আপনার Search History";
-
-
-    let box =
-    document.getElementById("history");
-
-
-    box.innerHTML = "";
-
-
-    if (historyData.length === 0) {
-
-        box.innerHTML =
-        "<p style='text-align:center;'>কোনো History নেই।</p>";
-
-        return;
-    }
-
-
-    historyData.forEach(function(item) {
-
-        box.innerHTML += `
-
-            <div
-                class="history-item"
-                onclick="searchAgain('${item.replace(/'/g, "\\'")}')"
-            >
-                🔍 ${item}
-            </div>
-
-        `;
-
-    });
-
-}
-
-
-function searchAgain(text) {
-
-    document.getElementById("search").value = text;
-
-    searchWeb();
-
-}
-
-
-/* CLEAR HISTORY */
-
-function clearHistory() {
-
-    historyData = [];
-
-    localStorage.removeItem("searchHistory");
-
-    document.getElementById("history").innerHTML = "";
-
-    document.getElementById("status").innerHTML =
-    "🗑️ History মুছে ফেলা হয়েছে";
-
-}
+let historyData =
+JSON.parse(
+localStorage.getItem("babluHistory")
+) || [];
 
 
 /* HOME */
 
 function home() {
 
-    document.getElementById("search").value = "";
+document.getElementById("search").value = "";
 
-    document.getElementById("history").innerHTML = "";
+document.getElementById("content").innerHTML = `
 
-    document.getElementById("status").innerHTML =
-    "কিছু লিখে Search করুন 👆";
+<div class="card">
+
+<h2>🏠 Bablu Search</h2>
+
+<p>
+আপনার Search App-এ স্বাগতম 👋
+</p>
+
+<p>
+কিছু লিখে Search করুন।
+</p>
+
+</div>
+
+`;
+
+}
 
 
-    document.getElementById("results").innerHTML = `
+/* SEARCH */
 
-        <h2 style="text-align:center;">
-            🏠 My Search
-        </h2>
+function searchWeb() {
 
-        <p style="text-align:center;">
-            আপনার Search App-এ স্বাগতম 👋
-        </p>
+let query =
+document.getElementById("search")
+.value
+.trim();
 
-    `;
+
+if (query === "") {
+
+alert("কিছু লিখুন");
+
+return;
+
+}
+
+
+/* SAVE HISTORY */
+
+historyData =
+historyData.filter(
+item => item !== query
+);
+
+historyData.unshift(query);
+
+historyData =
+historyData.slice(0, 20);
+
+localStorage.setItem(
+"babluHistory",
+JSON.stringify(historyData)
+);
+
+
+/* GOOGLE SEARCH */
+
+window.location.href =
+"https://www.google.com/search?q=" +
+encodeURIComponent(query);
+
+}
+
+
+/* HISTORY */
+
+function showHistory() {
+
+let content =
+document.getElementById("content");
+
+content.innerHTML = `
+
+<div class="card">
+
+<h2>🕘 Search History</h2>
+
+<div id="historyList"></div>
+
+</div>
+
+`;
+
+
+let list =
+document.getElementById("historyList");
+
+
+if (historyData.length === 0) {
+
+list.innerHTML =
+"<p>কোনো History নেই।</p>";
+
+return;
+
+}
+
+
+historyData.forEach(function(item) {
+
+let div =
+document.createElement("div");
+
+div.className =
+"history-item";
+
+div.innerText =
+"🔎 " + item;
+
+list.appendChild(div);
+
+});
+
+}
+
+
+/* CLEAR */
+
+function clearHistory() {
+
+historyData = [];
+
+localStorage.removeItem(
+"babluHistory"
+);
+
+document.getElementById("content").innerHTML = `
+
+<div class="card">
+
+<h2>🗑️ History Clear</h2>
+
+<p>
+Search History সফলভাবে মুছে ফেলা হয়েছে ✅
+</p>
+
+</div>
+
+`;
 
 }
 
 
 /* DARK MODE */
 
-function darkMode() {
+function toggleDark() {
 
-    document.body.classList.toggle("dark");
+document.body.classList.toggle("dark");
+
+}
+
+</script>
+
+
+<!-- SERVICE WORKER -->
+
+<script>
+
+if ("serviceWorker" in navigator) {
+
+navigator.serviceWorker.register(
+"service-worker.js"
+);
 
 }
 
